@@ -1,0 +1,64 @@
+---
+layout: post
+title: Periodically Blocking Domains with dnscrypt-proxy
+date: 2023-05-11 17:05:10.000000000 +00:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories: []
+tags: []
+meta:
+  _last_editor_used_jetpack: block-editor
+  timeline_notification: '1683824712'
+  _publicize_job_id: '83968291333'
+  wordads_ufa: s:wpcom-ufa-v3-beta:1683842781
+author:
+  login: ryanpersaud
+  email: ryan.persaud@gmail.com
+  display_name: ryanpersaud
+  first_name: Ryan
+  last_name: Persaud
+permalink: "/2023/05/11/blocking-domains-with-dnscrypt-proxy/"
+---
+<p><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"><br />
+<!-- wp:paragraph --><html><body></p>
+<p>I have the kids on their own wireless network/VLAN with DHCP that hands out a local DNS server that is really a container on my Pi running <a href="https://github.com/DNSCrypt/dnscrypt-proxy">dnscrypt-proxy</a>.  dnscrypt-proxy sends requests to a Cloudflare server that I’ve <a href="https://developers.cloudflare.com/cloudflare-one/policies/filtering/initial-setup/dns/">configured with various filtering options</a> (social media is blocked, youtube.com is a CNAME for restrict.youtube.com, etc.).  I wanted to restrict use of streaming services from 7PM-6AM at the network level, and I initially thought I’d have to replace dnscrypt-proxy with  a full blown DNS server that could blackhole the streaming services during ‘off-hours.’  Then, I thought maybe dnscrypt-proxy would support domain overrides and I could use a cron job to add and remove override entries as needed.  It turns out it’s even easier than that - dnsycrypt-proxy<a href="https://github.com/DNSCrypt/dnscrypt-proxy/blob/d381af5510879ad407fd23c407c05103da1c6269/dnscrypt-proxy/example-blocked-names.txt#L42"> supports a time-based blocklist out of the box</a>!</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Here’s how I configured it:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>I added the following schedule to my <code>dnscrypt-proxy.toml</code>:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><br><code>[schedules.'time-to-sleep']<br>mon = [{after='2:00', before='13:00'}]<br>tue = [{after='2:00', before='13:00'}]<br>wed = [{after='2:00', before='13:00'}]<br>thu = [{after='2:00', before='13:00'}]<br>fri = [{after='2:00', before='13:00'}]<br>sat = [{after='2:00', before='13:00'}]<br>sun = [{after='2:00', before='13:00'}]</code></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><code>[blocked_names]<br>blocked_names_file = 'blocked-names.txt'</code></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>And the contents of <code>blocked-names.txt</code>:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><br><code>*.netflix.* @time-to-sleep<br>*.disney*. @time-to-sleep</code></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>This worked great, but shortly after deploying it I had this exchange:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><br>Child: Hmm, I can’t play my show on Netflix?<br></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Me: Ha Ha! I blocked streaming after 7PM!<br></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Child: Oh, my previously downloaded shows work, I’ll just watch one of those.<br></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>Me: ...</p>
+<p><!-- /wp:paragraph --><br />
+</body></html></p>

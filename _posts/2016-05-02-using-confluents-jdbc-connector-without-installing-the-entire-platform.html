@@ -1,0 +1,53 @@
+---
+layout: post
+title: Using Confluent's JDBC Connector without installing the entire platform
+date: 2016-05-02 20:00:08.000000000 +00:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories: []
+tags: []
+meta:
+  _rest_api_published: '1'
+  _rest_api_client_id: "-1"
+  _publicize_job_id: '22407378322'
+author:
+  login: ryanpersaud
+  email: ryan.persaud@gmail.com
+  display_name: ryanpersaud
+  first_name: Ryan
+  last_name: Persaud
+permalink: "/2016/05/02/using-confluents-jdbc-connector-without-installing-the-entire-platform/"
+---
+<p><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"><br />
+<html><body></p>
+<p>I was interested in trying out <a href="http://docs.confluent.io/2.0.0/connect/connect-jdbc/docs/index.html">Confluent's JDBC connector</a> without installing their entire platform (I'd like to stick to vanilla Kafka as much as possible).  Here are the steps I followed to get it working with SQL Server.</p>
+<p>Download <a href="https://www.apache.org/dyn/closer.cgi?path=/kafka/0.9.0.1/kafka_2.10-0.9.0.1.tgz">Kafka 0.9</a>, untar the archive, and create a directory named connect_libs in the kafka root (<code>kafka_2.10-0.9.0.1/connect_libs</code>).</p>
+<p>Download the <a href="http://packages.confluent.io/archive/2.0/confluent-2.0.1-2.11.7.zip">Confluent platform</a> and extract the following jars (you should also be able to pull these from Confluent's Maven repo, though I was unsuccessful):</p>
+<ul>
+<li>common-config-2.0.1.jar</li>
+<li>common-metrics-2.0.1.jar</li>
+<li>common-utils-2.0.1.jar</li>
+<li>kafka-connect-jdbc-2.0.1.jar</li>
+</ul>
+<p>*Place these jars along with the <a href="https://msdn.microsoft.com/en-us/library/mt484311%28v=sql.110%29.aspx">SQL Server</a> driver in <code>kafka_2.10-0.9.0.1/connect_libs</code>. Update <code>bootstrap.servers</code> in <code>kafka_2.10-0.9.0.1/config/connect-standalone.properties</code> with the broker list and create <code>kafka_2.10-0.9.0.1/config/connect-jdbc.properties</code> with the settings to try out:</p>
+<pre>name=sqlserver-feed
+connector.class=io.confluent.connect.jdbc.JdbcSourceConnector
+tasks.max=1
+
+connection.url=jdbc:sqlserver://xxx.xxx.xxx.xxx:1433;databaseName=FeedDB;user=user;password=password
+table.whitelist=tblFeedIP,tblFeedURL
+
+mode=timestamp+incrementing
+timestamp.column.name=localLastUpdated
+incrementing.column.name=id
+
+topic.prefix=stg-</pre>
+<p>Create the topics <code>stg-tblFeedIP</code> and <code>stg-tblFeedURL</code> on the cluster.</p>
+<p>Add the connect_libs directory to the classpath:<br />
+<code>export CLASSPATH="connect_libs/*"</code></p>
+<p>And finally, run the connector in standalone mode with (make sure you are in the root kafka directory): <code>bin/connect-standalone.sh config/connect-standalone.properties config/connect-jdbc.properties</code></p>
+<p>Then, tail your topics to verify that messages are being produced by the connector.</p>
+<p>* If you don't care about cluttering up the default libs directory (<code>kafka_2.10-0.9.0.1/libs</code>), you can also just dump the jars there and not have to worry about setting the classpath.</body></html></p>

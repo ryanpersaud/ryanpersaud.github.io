@@ -1,0 +1,37 @@
+---
+layout: post
+title: "&amp;nbsp; nuisance"
+date: 2013-04-07 20:26:15.000000000 +00:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Programming
+tags:
+- HTML
+- Javascript
+meta:
+  _edit_last: '26683403'
+  _publicize_pending: '1'
+  tagazine-media: a:7:{s:7:"primary";s:0:"";s:6:"images";a:0:{}s:6:"videos";a:0:{}s:11:"image_count";i:0;s:6:"author";s:8:"26683403";s:7:"blog_id";s:8:"49930416";s:9:"mod_stamp";s:19:"2013-04-08
+    03:13:04";}
+author:
+  login: ryanpersaud
+  email: ryan.persaud@gmail.com
+  display_name: ryanpersaud
+  first_name: Ryan
+  last_name: Persaud
+permalink: "/2013/04/07/nuisance/"
+---
+<p><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"><br />
+<html><body></p>
+<p dir="ltr">Recently, one of my former developers had an issue with &amp;nbsp; (Non-breaking space) on one of the websites he was working on.  This particular dev has a knack for finding annoying problems that are seemingly simple, but take an inordinate amount of time to solve.  The issue arose when he obtained the innerHTML of an element and then attempted to determine if the content contained a space.  If there was a space, innerHTML returned &amp;nbsp; as a string, so logically he decided to use an if-statement checking for &amp;nbsp;:</p>
+<p dir="ltr"><code>if (input == "&amp;nbsp;")</code></p>
+<p>This did not work for some reason, so he asked me to take a look at the code.  After a lot of discussion, and trying things out in Firebug and JSFiddle, I finally asked him to view source on the page and tell me what he saw.  It turns out that the custom framework that his company uses automatically replaces any occurrence of  &amp;nbsp; with the Unicode equivalent, &amp; #xa0; (Note: there should not be a space between the &amp; and the #.  Fittingly for this post, Wordpress is converting it into a space, regardless of how I attempt to escape it.).  Off the top of my I head I could not think of a better workaround than to create a variable with &amp;nbsp; in it, and then use the variable in the comparison:</p>
+<p dir="ltr"><code>var thisisdumb = "&amp;nb" + "sp;"<br />
+<code>if (input == thisisdumb)</code><br />
+</code></p>
+<p dir="ltr">That worked, but it felt distinctly unsatisfying, and kind of dirty.  I told the dev to ask somebody if there was a way to escape &amp;nbsp; so that the framework would ignore it.</p>
+<p></body></html></p>

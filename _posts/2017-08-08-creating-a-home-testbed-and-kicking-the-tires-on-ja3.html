@@ -1,0 +1,32 @@
+---
+layout: post
+title: Creating a Home Testbed, and Kicking the Tires on JA3
+date: 2017-08-08 03:36:27.000000000 +00:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories: []
+tags: []
+meta:
+  _edit_last: '26683403'
+  geo_public: '0'
+  _publicize_job_id: '8024409655'
+author:
+  login: ryanpersaud
+  email: ryan.persaud@gmail.com
+  display_name: ryanpersaud
+  first_name: Ryan
+  last_name: Persaud
+permalink: "/2017/08/08/creating-a-home-testbed-and-kicking-the-tires-on-ja3/"
+---
+<p><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"><br />
+<html><body>
+<p>For a while now, I have wanted the ability to easily sniff my own packets.  Specifically, I've wanted to be able to monitor all traffic entering and exiting my home network.  In the past, I've turned old machines into transparent bridges and wired them in between my router and cable modem.  However, actually using these boxes was never quite as simple as I had hoped, and in the back of my mind I was always afraid that the bridge would be detected and hax0red.  I knew the easiest solution would be to upgrade from my army of cheap, unmanaged switches to a more expensive manged switch that supported port mirroring.  In July, I finally ordered a <a href="https://www.amazon.com/TP-Link-24-Port-Gigabit-Ethernet-TL-SG1024DE/dp/B00CUG8ESM">TP-Link switch</a> that fit the bill.  I installed it the day it arrived, but I have not had a chance to try the more advanced features until this past weekend.  I figured I'd use the opportunity to kick the tires on the JA3 <a href="https://engineering.salesforce.com/open-sourcing-ja3-92c9e53c3c41">SSL/TLS client fingerprinting scheme</a> that some researchers at Salesforce have been working on.</p>
+<p>Out of the box, the switch has the IP address 192.168.0.1, so I had to put a machine on that network in order to configure the switch.  Word to the wise, updating the firmware reverts the switch's IP address to 192.168.0.1, so you may want to update before changing the IP.  Anyway, <a href="http://www.tp-link.com/us/faq-527.html">enabling port mirroring</a> on the TP Link was straightforward, if inelegant (you get what you pay for).  One gotcha is that I had to select the mirroring port a second time before it 'stuck' (see previous parenthetical note).  I mirrored the port that connects the switch to my router, and after some futzing with my Raspberry Pi's external USB network adapter and an ancient USB hub, I was in business:</p>
+<p>[caption id="attachment_261" align="alignnone" width="300"]<img class="alignnone size-medium wp-image-261" src="{{site.baseurl}}/assets/2017/08/sniffer.jpeg?w=300" alt="" width="300" height="225"> This setup is temporary and I hope to neaten it up at some point in the near future.[/caption]</p>
+<p>JA3 parses client Hello SSL/TLS packets and extracts out fields to create a string that can be used to uniquely identify a client (a fingerprint).  Instead of passing around a potentially large string, an MD5 hash is calculated.  Since I only needed to capture Hello packets, I did a quick Google to find a tcpdump filter that would drop the rest of the traffic coming over the mirror port:  <code>tcpdump -ni eth1 "tcp port 443 and (tcp[((tcp[12] &amp; 0xf0) &gt;&gt; 2)] = 0x16)"</code></p>
+<p>This filter actually grabs server Hellos too, but I can live with that for now.  I let the capture run for about a day, and then I ran the <a href="https://github.com/salesforce/ja3/tree/master/python">JA3 python script</a> on the capture file to generate the aforementioned hashes.  Even though the capture file was only 39MB, it took the script a while to process all of the packets.  At some point, I'd like to take a closer look at the script and see if there are any opportunities for optimization.  In order to make my life easier, I did add a JSON output option and submit a <a href="https://github.com/salesforce/ja3/pull/5">Pull Request</a>.  Once I had my fingerprints, I compared them against <a href="https://github.com/trisulnsm/trisul-scripts/blob/master/lua/frontend_scripts/reassembly/ja3/prints/ja3fingerprint.json">a list that the trisul folks generated in late June</a> from <a href="https://github.com/LeeBrotherston/tls-fingerprinting/blob/master/fingerprints/fingerprints.json">fingerprint strings</a> that Lee Brotherston generated in late March.  Anyway, the point is that these fingerprints are not that recent - and it showed.  Of 82 unique fingerprints that were captured in my network, seven of them appeared in the trisul list.  None of the seven were Chrome which makes sense given the high release cadence that the Chrome team maintains.  I am curious what is lurking in those 75 remaining hashes.  My Nest?  Angry Birds?  Jinyang's fridge?</p>
+<p>So, the first thought I have is that for JA3 to be useful in a whitelisting approach, there is going to have to be a trusted source of fingerprints that is constantly profiling new versions of popular clients and generating fingerprints for them.  It would be nice to have a process that could monitor for new versions of applications like Chrome and Firefox, automatically pull them down, and generate signatures for them.  The second thought I had is that there might be less unique fingerprints to deal with in an enterprise setting (depending on how locked down the network is, of course) since there aren't going to be a bunch of random devices phoning home and mobile apps being used.</p>
+<p></body></html></p>

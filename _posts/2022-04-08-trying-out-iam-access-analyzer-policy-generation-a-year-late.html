@@ -1,0 +1,77 @@
+---
+layout: post
+title: Trying out IAM Access Analyzer policy generation (a year late)
+date: 2022-04-08 20:25:11.000000000 +00:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories: []
+tags: []
+meta:
+  _last_editor_used_jetpack: block-editor
+  timeline_notification: '1649449513'
+  _publicize_job_id: '71152871757'
+author:
+  login: ryanpersaud
+  email: ryan.persaud@gmail.com
+  display_name: ryanpersaud
+  first_name: Ryan
+  last_name: Persaud
+permalink: "/2022/04/08/trying-out-iam-access-analyzer-policy-generation-a-year-late/"
+---
+<p><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"><br />
+<!-- wp:paragraph --><html><body></p>
+<p>Since early on in my journey with AWS, I’ve been looking for tools to assist me in creating least privilege policies.  Many online examples and actual tool documentation provide overly permissive policies, so it’s important to analyze them before deploying them in production (or even DEV, depending on the permission!).  One tool that I experimented with a few years ago was DUO Labs’ <a href="https://github.com/duo-labs/cloudtracker">CloudTracker</a>.  I used it with another engineer, <a href="https://harryeldridge.com/">Harry</a>, to try and reduce the set of S3 permissions granted to GitLab’s role since the documentation recommended (at the time, at least) granting <code>S3:*</code>.  I also used it to get 90% of the permissions for a Terraform role that engineers could assume when applying their TF*.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>So when AWS <a href="https://aws.amazon.com/blogs/security/iam-access-analyzer-makes-it-easier-to-implement-least-privilege-permissions-by-generating-iam-policies-based-on-access-activity/">announced IAM Access Analyzer policy generation</a> I was excited to try it out.  Not having to install and run an external tool and worry about my Athena spend was definitely attractive. A year later, and  I finally got around to trying it out this week at work, so I figured I’d write a brief post describing my experience.  Note, the example provided in this post is from my personal AWS account.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>First, I created a role, <code>lambda-aa-test</code>,  with an inline policy that granted the role permission to call <code>GetFunction</code>:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:code --></p>
+<pre class="wp-block-code"><code>{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "lambda:GetFunction",
+            "Resource": "*"
+        }
+    ]
+}</code></pre>
+<p><!-- /wp:code --></p>
+<p><!-- wp:paragraph --></p>
+<p>Then I assumed <code>lambda-aa-test</code> and called <code>get-function</code> on a Lambda function in my account.  Interestingly, CloudTrail records this as <code>GetFunction20150331v2</code> which caused some confusion when I was attempting to verify that the call had propagated to CloudTrail.  Next, I clicked the button to ‘Generate Policy’ and waited a couple of minutes while the analyzer did its thing.  Here’s the generated policy:</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:code --></p>
+<pre class="wp-block-code"><code>{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "sts:GetCallerIdentity",
+            "Resource": "*"
+        },
+        {
+        "Effect": "Allow",
+            "Action": "lambda:GetFunction",
+            "Resource": "arn:aws:lambda:${Region}:${Account}:function:${FunctionName}"
+        }
+    ]
+}</code></pre>
+<p><!-- /wp:code --></p>
+<p><!-- wp:paragraph --></p>
+<p><code>sts:GetCallerIdentity</code> is not a mistake - I did call that after assuming the role to ensure I was who I thought I was.  And you can see that <code>lambda:GetFunction</code> was also included as expected.  However, the resource is a templated ARN that can be filled in by the user.  This is useful for understanding what Resource the Action can be applied to (and the expected ARN format), but it isn’t super helpful in cases where there are a number of possible resources and we want to narrow down which ones an action can be performed on.  For example, if I had twenty Lambda functions, but I only ever call <code>GetFunction</code> on <code>MyFunction</code>, this generated policy would not help me limit <code>GetFunction </code>to <code>MyFunction</code>.  IIRC, this was also a  limitation of CloudTracker when I used it.</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>* I should note that even with the reduced permissions, an attacker could still escalate their privileges by using the terraform role to create a policy with whatever permissions they desired.  <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html">Permission Boundaries</a> can limit the effective permissions of policies created by the terraform role, but implementing PBs can be complex and difficult to debug.</p>
+<p><!-- /wp:paragraph --><br />
+</body></html></p>

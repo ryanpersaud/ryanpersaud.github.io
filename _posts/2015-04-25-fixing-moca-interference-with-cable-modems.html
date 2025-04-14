@@ -1,0 +1,28 @@
+---
+layout: post
+title: Fixing MoCA interference with cable modems
+date: 2015-04-25 19:00:51.000000000 +00:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Networking
+tags: []
+meta:
+  _edit_last: '26683403'
+  _publicize_pending: '1'
+  geo_public: '0'
+author:
+  login: ryanpersaud
+  email: ryan.persaud@gmail.com
+  display_name: ryanpersaud
+  first_name: Ryan
+  last_name: Persaud
+permalink: "/2015/04/25/fixing-moca-interference-with-cable-modems/"
+---
+<p><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"><br />
+<html><body>
+<p>In order to connect my home theater setup in the family room with the computers in my office and basement, I am using <a href="http://en.wikipedia.org/wiki/Multimedia_over_Coax_Alliance">MoCA </a>Ethernet to coaxial cable bridges. Verizon Fios customers will be familiar with MoCA as it's how Verizon DVRs communicate with Verizon-provided Access Points to get listings, and it's how multi-room DVRs communicate. Unfortunately, MoCA does not play well with my Cox cable modem service despite supposedly using different frequencies.  I got things to a liveable state by using a diplexer to isolate the MoCA adapater.  However, after a recent upgrade to a DOCSIS 3.0 modem, I began getting periodic disconnects of both my cable modem and my MoCA adapters.  Near as I can tell, the MoCA signals were causing the cable modem to reboot, and the reboot process caused the MoCA adapters to lose connectivity.  I was pulling my hair out (what's left of it, anyway) trying to figure out a way for MoCA and my cable modem to happily coexist on the same piece of coax. After some Googling, I came across a <a href="http://www.cisco.com/c/dam/en/us/td/docs/video/at_home/Cable_Accessories/4031235_B.pdf">PDF</a> from our friends at Cisco that describes how to eliminate interference between MoCA and cable modems (page 12). All you need to do is place a MoCA Point-of-Entry filter between your cable modem and the wall. As the name suggests, PoE filters are generally placed in the junction box that connects your house to the utility poll and are designed to block MoCA frequencies so that your signal does not escape your house and so that your neighbors' signals do not enter. However, they also do a great job of keep the MoCA frequencies from DoSing your cable modem.</p>
+<p></body></html></p>
