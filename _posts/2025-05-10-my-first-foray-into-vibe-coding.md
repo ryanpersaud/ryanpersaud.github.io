@@ -16,7 +16,7 @@ Based on all the chatter I've been hearing about vibe coding, I'm late to the pa
 1. Retrieve a binary blob from DynamoDB using an id as the key. The key could have one of two prefixes, depending on the environment. Also, the table that the blob is stored in could have one of two names, depending on the environment.
 2. Deserialize the binary blob into one of two structures, again depending on the environment.
 3. Iterate through the structure, looking for arrays of a particular structure.
-4. For any non-nil elements in the array, check whether the timestamp contained in the structure was less than a year old.
+4. For any non-nil elements in the array, check whether the timestamp contained in the structure is less than a year old.
 
 <div style="text-align: center; margin: 1em 0;">
 <img src="/assets/images/blob.png" alt="Binary blob visualization" style="width: 25%;">
