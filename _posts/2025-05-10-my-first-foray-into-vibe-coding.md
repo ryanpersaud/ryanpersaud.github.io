@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "My First Foray into Vibe Coding"
-date: 2025-05-10 13:31:51 -0600
+date: 2025-05-10 09:58:20 -0600
 categories: [Programming]
 tags: [vibe-coding]
 ---
