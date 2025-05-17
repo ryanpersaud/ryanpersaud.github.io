@@ -8,7 +8,7 @@ Hi, I'm Ryan Persaud. Welcome to my blog where I share my thoughts and experienc
 
 You can find me on:
 - [GitHub](https://github.com/ryanpersaud)
-- [Mastodon](https://mastodon.social/@oldninjax)
+- [Mastodon](https://infosec.exchange/@oldninjax)
 
 This site is built using Jekyll, a static site generator. You can find out more about Jekyll at [jekyllrb.com](https://jekyllrb.com/).
 
@@ -22,3 +22,4 @@ You can find the source code for Jekyll at GitHub:
 
 
 [jekyll-organization]: https://github.com/jekyll
+
