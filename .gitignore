@@ -1,0 +1,40 @@
+# Jekyll
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+.jekyll-cache/
+.bundle/
+vendor/
+
+# Gemfiles
+Gemfile.lock
+
+# Build artifacts
+*.gem
+*.rbc
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Archives
+jekyll-from-do/
+*.tar.gz
+posts.tar.gz
+
+# Temporary files
+*.bak
+*.tmp
+
+# Environment
+.env
+.env.local
+
