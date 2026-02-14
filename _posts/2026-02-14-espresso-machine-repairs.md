@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Surgery on a Diletta Mio"
-date: 2026-02-01 09:00:00 -0600
+date: 2026-02-14 08:00:00 -0600
 categories: [Hardware]
 tags: [espresso, repair]
 ---
