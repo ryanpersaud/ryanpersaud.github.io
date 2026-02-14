@@ -2,7 +2,6 @@
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
-.jekyll-cache/
 .bundle/
 vendor/
 _site/
@@ -37,4 +36,7 @@ posts.tar.gz
 # Environment
 .env
 .env.local
+
+# Claude
+CLAUDE.md
 
