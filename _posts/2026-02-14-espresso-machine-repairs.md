@@ -21,7 +21,7 @@ Eventually, we took the top off the machine and I started poking around. After g
 
 <div style="text-align: center; margin-bottom: 2em;">
 <img src="/assets/images/espresso-power-button.jpeg" alt="Replacement power button installed on espresso machine" style="width: 52.5%;">
-<p style="font-style: italic; color: #666; margin-top: 0.5em; font-size: 0.9em;">I didn't get an exact match for the color, but it does the job.</p>
+<p style="font-style: italic; color: #666; margin-top: 0.5em; font-size: 0.9em;">I didn't get an exact match for the color, but it does the job</p>
 </div>
 
 We continued making our tasty hot beverages for a few months, but then the steam wand stopped making steam and just dripped water. After some investigation on the aforementioned Facebook group, Erin determined that a thermostat was being tripped and learned how to reset it. As everyone does when a home appliance is acting up, we hoped it was an isolated incident. Unfortunately, as is often the case, the thermostat kept tripping.
